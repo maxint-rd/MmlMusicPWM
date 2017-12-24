@@ -77,3 +77,5 @@ The base library is based on the MusicEngine library by Chris Taylor, ported fro
 - Info about using PWM and other methods to generate sound:<br>
    https://developer.mbed.org/users/4180_1/notebook/using-a-speaker-for-audio-output/
 
+### Disclaimer
+- All code on this GitHub account, including this library is provided to you on an as-is basis without guarantees and with all liability dismissed. It may be used at your own risk. Unfortunately I have no means to provide support.
