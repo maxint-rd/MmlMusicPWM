@@ -1,0 +1,3 @@
+MmlMusicPWM	KEYWORD1
+play	KEYWORD2
+isPlaying	KEYWORD2
