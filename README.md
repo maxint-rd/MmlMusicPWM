@@ -25,15 +25,14 @@ Then to play music, call the play method where you want:
 music.play("T240 L16 O6 C D E F G");
 ```
 
-To continue playing the rest of the sequence, regular calls to continuePlaying() must be made, either in a timer interrupt or as part of a loop.
+When playing the rest of the sequence, the isPlaying() method can be used to determine if the sequence is still playing.
 ```
 if(music.isPlaying()
 {
     ...
 }
 ```
-
-See the included examples for more detailed instructions on how to use this library.
+Alterternatively a callback function can be used to signal the start or end of playing the tune. See the included examples for more detailed instructions on how to use this library.
 
 ### Supported MML Syntax
 Short syntax overview:<br>
