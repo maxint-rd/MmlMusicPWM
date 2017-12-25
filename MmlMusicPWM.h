@@ -55,7 +55,7 @@ public:
 		volatile uint8_t *_pinMode;     // Pin mode.
 		uint8_t _pinMask = 0;        // Bitmask for pins
 		volatile uint8_t *_pinOutput; // Output port register for pin.
-		const int _tTim2_prescale[] = { 2, 16, 64, 128, 256, 512, 2048 }; // Prescaler.
+		const int _tTim2_prescale[7] = { 2, 16, 64, 128, 256, 512, 2048 }; // Prescaler.
 #endif
 
 private:

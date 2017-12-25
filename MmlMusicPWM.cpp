@@ -262,7 +262,7 @@ ISR(TIMER2_COMPA_vect)
 { // Timer interrupt vector.
   if(!__thisMmlMusicPWM__)
   	return;
-  if (millis() > _tTim2_time)
+  if (millis() > __thisMmlMusicPWM__->_tTim2_time)
   {
     __thisMmlMusicPWM__->_noToneTim2(); // Check to see if it's time for the note to end.
     __thisMmlMusicPWM__->_executeCommandTim2();		// execute the next command
