@@ -1,17 +1,19 @@
 # MmlMusicPWM
-Arduino library to play MML music using a piezo speaker on an output pin
+Arduino library to play MML music using a piezo speaker on an output pin.
 
 ### Introduction
-This library is an addition to the [MmlMusic base library](https://github.com/maxint-rd/MmlMusic). It produces sound on an output pin that can be connected to a piezo speaker, or via an amplifier to a regular speaker.
+MmlMusicPWM provides a means to play Music Macro Language sequences asynchronously. Where the Arduino tone() function allows for playing one single note, the MmlMusicPWM::play() method of can play an entire music score.<br>
+It produces sound by means of a PWM signal on an output pin, which can be connected to a piezo speaker, or via an amplifier to a regular speaker. The music is played using a timer interrupt routine that changes the PWM frequency according the specific notes being played. This means we can do other things while the music keeps playing!
 
 ### Device independant base class
-This library is implemented as a child class of the device independant MmlMusic class. That class requires additional code via either a callback function or the implementation of a child class to implement the actual production of sound.
+This library is an extension to the [MmlMusic base library](https://github.com/maxint-rd/MmlMusic). It is implemented as a child class of the device independant MmlMusic class. That class requires additional code via either a callback function or the implementation of a child class to implement the actual production of sound.
 
 ### Support for different MCUs
-This library supports playing MML music on different MCUs such as ESP8266, ATmega 328, 168 and ATtiny85. Depending on the MCU, it uses different timers and interrupts to produce the sound and to schedule playback of notes and silences.
+This library supports playing MML music on different MCUs such as ESP8266, ATmega 328, 168 and ATtiny85. Depending on the MCU, it uses different timers and interrupts to produce the sound and to schedule playback of notes and silences. The music will keep on playing using a timer interrupt. On the ESP8266 the Ticker library is used. For ATmega 328/168 a Timer2 interrupt is used and an replacement method for tone() is provided. On the ATtiny85 resources are limited. There Timer1 interrupt is used, which impacts regular PWM output.<br>
+BTW: The [MmlMusic Tone](https://github.com/maxint-rd/MmlMusic/tree/master/examples/MmlMusicTone) example shows how to play notes without using a timer interrupt.
 
 ### Installation/Usage
-The current version can be downloaded as an Arduino library using the Sketch|Library menu. Just add the zipfile library and the enclosed examples should appear in the menu automatically. 
+The library can be downloaded and installed as an Arduino library using the Sketch|Library menu. Just add the zipfile library and the enclosed examples should appear in the menu automatically. 
 
 Initialisation outside of Setup():
 ```
@@ -62,7 +64,7 @@ If notes seem missing, check your score against the syntax above and replace unk
 
 ### Features & limitations
 - Playing back multiple tracks is supported by the base library, but not (yet) by this library. Only a single pulse-stream is generated. The documentation of the comma-command above is maintained for future purposes.
-- This library was tested in the Arduino IDE v1.6.10 and v1.8.2. The current version of this library supports ESP8266, Atmel ATmega328 and ATmega168 MCUs. Support for ATtiny85 was also added, but since the ATtiny85 has limited resources, available memory limits it usage to simple applications.
+- This library was tested in the Arduino IDE v1.6.10 and v1.8.2. The current version of this library supports ESP8266, Atmel ATmega328 and ATmega168 MCUs. Support for ATtiny85 was also added, but since the ATtiny85 has limited resources, available memory limits it usage to simple applications. On ATtiny85 Timer1 is used, impacting the use of the regular PWM analogWrite() function.
 - Known bug: when ending the play-string with a number (eg. "T120 O4 G16") the player may read beyond the end of the string and play whatever is next in memory. Workaround: use alternative notation (eg. "T120 O4 L16 G") or an addional terminator (eg. "T120 O4 G16\0").
 
 ### Credits
