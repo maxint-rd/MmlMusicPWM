@@ -1,5 +1,5 @@
 # MmlMusicPWM
-Arduino library to play MML music using a piezo speaker on an output pin.
+Arduino library to play MML music using a piezo speaker on an output pin. Implemented using the [MmlMusic](https://github.com/maxint-rd/MmlMusic) base library.
 
 ### Introduction
 MmlMusicPWM provides a means to play Music Macro Language sequences asynchronously. Where the Arduino tone() function allows for playing one single note, the MmlMusicPWM::play() method of can play an entire music score.<br>
@@ -9,7 +9,7 @@ It produces sound by means of a PWM signal on an output pin, which can be connec
 This library is an extension to the [MmlMusic base library](https://github.com/maxint-rd/MmlMusic). It is implemented as a child class of the device independant MmlMusic class. That class requires additional code via either a callback function or the implementation of a child class to implement the actual production of sound.
 
 ### Support for different MCUs
-This library supports playing MML music on different MCUs such as ESP8266, ATmega 328, 168 and ATtiny85. Depending on the MCU, it uses different timers and interrupts to produce the sound and to schedule playback of notes and silences. The music will keep on playing using a timer interrupt. On the ESP8266 the Ticker library is used. For ATmega 328/168 a Timer2 interrupt is used and an replacement method for tone() is provided. On the ATtiny85 resources are limited. There Timer1 interrupt is used, which impacts regular PWM output.<br>
+This library supports playing MML music on different MCUs such as ESP8266, ATmega 328, 168 and ATtiny85. Depending on the MCU, it uses different timers and interrupts to produce the sound and to schedule playback of notes and silences. The music will keep on playing using a timer interrupt. On the ESP8266 the Ticker library is used. For ATmega 328/168 a Timer2 interrupt is used and a replacement method for tone() is provided. On the ATtiny85 resources are limited. There a Timer1 interrupt is used, which impacts regular PWM output.<br>
 BTW: The [MmlMusic Tone](https://github.com/maxint-rd/MmlMusic/tree/master/examples/MmlMusicTone) example shows how to play notes without using a timer interrupt.
 
 ### Installation/Usage
