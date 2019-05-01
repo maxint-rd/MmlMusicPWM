@@ -57,6 +57,8 @@ void MmlMusicPWM::playTone(unsigned int frequency, unsigned long length, uint8_t
 		// The volume command Vnnn has a range 0-128, so we multiply by 4 to get the PWM
 		// value.
 		analogWrite(_pinPwm, nVolume * 4);
+		if(length>0)
+	    _scheduler.once(length/1000.0, &MmlMusicPWM::musicTickerStopCallback, this);	// MMOLE 190420: schedule when the tone should stop 
 #elif defined(__AVR_ATtiny85__)
     _toneTim1(_pinPwm, frequency, length);
 #else
@@ -79,6 +81,10 @@ void MmlMusicPWM::playTone(unsigned int frequency, unsigned long length, uint8_t
 void MmlMusicPWM::musicTickerCallback(MmlMusicPWM* __thisMmlMusicPWM)
 {
     __thisMmlMusicPWM->continuePlaying();
+}
+void MmlMusicPWM::musicTickerStopCallback(MmlMusicPWM* __thisMmlMusicPWM)
+{
+    __thisMmlMusicPWM->noTone();
 }
 #elif defined(__AVR_ATtiny85__)
 /*

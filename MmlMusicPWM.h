@@ -23,6 +23,7 @@ private:
 #if defined (ARDUINO_ARCH_ESP8266)
     Ticker     _scheduler;
     static void musicTickerCallback(MmlMusicPWM*);
+    static void musicTickerStopCallback(MmlMusicPWM*);
 #else
     //MsTimer2   _scheduler;
 #endif
