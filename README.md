@@ -66,6 +66,22 @@ If notes seem missing, check your score against the syntax above and replace unk
 - Playing back multiple tracks is supported by the base library, but not (yet) by this library. Only a single pulse-stream is generated. The documentation of the comma-command above is maintained for future purposes.
 - This library was tested in the Arduino IDE v1.6.10 and v1.8.2. The current version of this library supports ESP8266, Atmel ATmega328 and ATmega168 MCUs. Support for ATtiny85 was also added, but since the ATtiny85 has limited resources, available memory limits it usage to simple applications. On ATtiny85 Timer1 is used, impacting the use of the regular PWM analogWrite() function.
 - Known bug: when ending the play-string with a number (eg. "T120 O4 G16") the player may read beyond the end of the string and play whatever is next in memory. Workaround: use alternative notation (eg. "T120 O4 L16 G") or an addional terminator (eg. "T120 O4 G16\0").
+- Known issue: on ESP8266 the Ticker class is used to schedule playing the notes. In latest tests the delay() function appears to conflict with Ticker and the timer interrupts seem to override each other. To fix this the following code can be used:
+```
+//----------------FIX ESP8266 ISSUE WITH TICKER AND DELAY -----------
+
+void msDelay(unsigned int nDuration)
+{ // replacement for delay() which in ESP8266 core seems to conflict usage of timer scheduler by Ticker which is used in MmlMusicPWM
+  uint32_t ulStart=millis();
+  while(millis() < ulStart+nDuration)
+    yield();
+}
+
+// redefine delay() which seems to have problems with Ticker used in MmlMusicPWM
+#define delay(x) msDelay(x)
+//-----------------------------------------------------------
+```
+
 
 ### Credits
 The base library is based on the MusicEngine library by Chris Taylor, ported from mBed to Arduino. It is a follow-up of the [ESP-MusicEngine library](https://github.com/maxint-rd/ESP-MusicEngine).
