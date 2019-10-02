@@ -38,8 +38,9 @@ void MmlMusicPWM::playTone(unsigned int frequency, unsigned long length, uint8_t
   if(frequency==0 && length==0)
 	{  	
 #if defined (ARDUINO_ARCH_ESP8266)
-    analogWriteFreq(1000); // Note: analogWriteFreq(0);  gives a spontaneous WDT reset
-    analogWrite(_pinPwm, 0);  // default range is 1024, start quiet using pulse-width zero
+    //analogWriteFreq(1000); // Note: analogWriteFreq(0);  gives a spontaneous WDT reset
+    //analogWrite(_pinPwm, 0);  // default range is 1024, start quiet using pulse-width zero
+    ::noTone(_pinPwm);
 #elif defined(__AVR_ATtiny85__)
     _noToneTim1();
 #else
@@ -50,13 +51,16 @@ void MmlMusicPWM::playTone(unsigned int frequency, unsigned long length, uint8_t
   {
 #if defined (ARDUINO_ARCH_ESP8266)
 		// Set the PWM frequency to that specified by the note being played
-		analogWriteFreq(frequency);
+//		analogWriteFreq(frequency);
 		// Note that PWM has lots of harmonics, so volume control using the PWM
 		// duty-cycle is not very good, but perhaps better than nothing.
 		// The default pwm-range is 1024. A 50% duty-cycle (=512) gives highest volume
 		// The volume command Vnnn has a range 0-128, so we multiply by 4 to get the PWM
 		// value.
-		analogWrite(_pinPwm, nVolume * 4);
+		//analogWrite(_pinPwm, nVolume * 4);
+    ::tone(_pinPwm, frequency);
+    //Serial.println(frequency, DEC);
+
 		if(length>0)
 	    _scheduler.once(length/1000.0, &MmlMusicPWM::musicTickerStopCallback, this);	// MMOLE 190420: schedule when the tone should stop 
 #elif defined(__AVR_ATtiny85__)
