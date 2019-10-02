@@ -66,7 +66,7 @@ If notes seem missing, check your score against the syntax above and replace unk
 - Playing back multiple tracks is supported by the base library, but not (yet) by this library. Only a single pulse-stream is generated. The documentation of the comma-command above is maintained for future purposes.
 - This library was tested in the Arduino IDE v1.6.10 and v1.8.2. The current version of this library supports ESP8266, Atmel ATmega328 and ATmega168 MCUs. Support for ATtiny85 was also added, but since the ATtiny85 has limited resources, available memory limits it usage to simple applications. On ATtiny85 Timer1 is used, impacting the use of the regular PWM analogWrite() function.
 - Known bug: when ending the play-string with a number (eg. "T120 O4 G16") the player may read beyond the end of the string and play whatever is next in memory. Workaround: use alternative notation (eg. "T120 O4 L16 G") or an addional terminator (eg. "T120 O4 G16\0").
-- Known issue: on ESP8266 the Ticker class is used to schedule playing the notes. In latest tests the delay() function appears to conflict with Ticker and the timer interrupts seem to override each other. To fix this the following code can be used:
+- Known issue: on ESP8266 the Ticker class is used to schedule playing the notes. In earlier tests the delay() function appears to conflict with Ticker/analogWrite and the timer interrupts seem to override each other. This seems fixed in latest version which uses tone() and noTone(). If the problem still occurs the following code can be used as workaround:
 ```
 //----------------FIX ESP8266 ISSUE WITH TICKER AND DELAY -----------
 
