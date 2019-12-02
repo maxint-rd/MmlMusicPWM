@@ -2,7 +2,7 @@
 Arduino library to play MML music using a piezo speaker on an output pin. Implemented using the [MmlMusic](https://github.com/maxint-rd/MmlMusic) base library.
 
 ### Introduction
-MmlMusicPWM provides a means to play Music Macro Language sequences asynchronously. Where the Arduino tone() function allows for playing one single note, the MmlMusicPWM::play() method of can play an entire music score.<br>
+MmlMusicPWM provides a means to play Music Macro Language sequences asynchronously. Where the Arduino tone() function allows for playing one single note, the MmlMusicPWM::play() method can play an entire music score.<br>
 It produces sound by means of a PWM signal on an output pin, which can be connected to a piezo speaker, or via an amplifier to a regular speaker. The music is played using a timer interrupt routine that changes the PWM frequency according the specific notes being played. This means we can do other things while the music keeps playing!
 
 ### Device independant base class
@@ -65,23 +65,8 @@ If notes seem missing, check your score against the syntax above and replace unk
 ### Features & limitations
 - Playing back multiple tracks is supported by the base library, but not (yet) by this library. Only a single pulse-stream is generated. The documentation of the comma-command above is maintained for future purposes.
 - This library was tested in the Arduino IDE v1.6.10 and v1.8.2. The current version of this library supports ESP8266, Atmel ATmega328 and ATmega168 MCUs. Support for ATtiny85 was also added, but since the ATtiny85 has limited resources, available memory limits it usage to simple applications. On ATtiny85 Timer1 is used, impacting the use of the regular PWM analogWrite() function.
-- Known bug: when ending the play-string with a number (eg. "T120 O4 G16") the player may read beyond the end of the string and play whatever is next in memory. Workaround: use alternative notation (eg. "T120 O4 L16 G") or an addional terminator (eg. "T120 O4 G16\0").
-- Known issue: on ESP8266 the Ticker class is used to schedule playing the notes. In earlier tests the delay() function appears to conflict with Ticker/analogWrite and the timer interrupts seem to override each other. This seems fixed in latest version which uses tone() and noTone(). If the problem still occurs the following code can be used as workaround:
-```
-//----------------FIX ESP8266 ISSUE WITH TICKER AND DELAY -----------
-
-void msDelay(unsigned int nDuration)
-{ // replacement for delay() which in ESP8266 core seems to conflict usage of timer scheduler by Ticker which is used in MmlMusicPWM
-  uint32_t ulStart=millis();
-  while(millis() < ulStart+nDuration)
-    yield();
-}
-
-// redefine delay() which seems to have problems with Ticker used in MmlMusicPWM
-#define delay(x) msDelay(x)
-//-----------------------------------------------------------
-```
-
+- There was a bug in the MmlMusic base library that could impact playback of notes and the duration of the delay() function. When ending the play-string with a number (eg. "T120 O4 G16"), the player could read beyond the end of the string, play whatever was next in memory and mess up the timer callback. This bug has been fixed. Please use the latest version of the [MmlMusic base library](https://github.com/maxint-rd/MmlMusic).  See [this issue](https://github.com/maxint-rd/MmlMusic/issues/1) for details.
+- In ESP8266 cores 2.5.1 and higher reading a float array from PROGMEM had a [byte alignment issue](https://github.com/maxint-rd/MmlMusicPWM/issues/2) causing incorrect playback of notes. This issue was [fixed](https://github.com/esp8266/Arduino/pull/6593) in ESP8266 [core 2.6.0](https://github.com/esp8266/Arduino/releases/tag/2.6.0) and has a workaround in the [MmlMusic base library](https://github.com/maxint-rd/MmlMusic) for earlier cores. See [this issue](https://github.com/maxint-rd/MmlMusicPWM/issues/2) for details.
 
 ### Credits
 The base library is based on the MusicEngine library by Chris Taylor, ported from mBed to Arduino. It is a follow-up of the [ESP-MusicEngine library](https://github.com/maxint-rd/ESP-MusicEngine).
