@@ -21,6 +21,12 @@
 #if defined (ARDUINO_ARCH_ESP8266)
     #include <cctype>
 #endif
+#if defined (ARDUINO_ARCH_RP2040)
+#include <cctype>
+static MmlMusicPWM* __thisMmlMusicPWM = NULL;
+static void __musicTickerCallback();
+static void __musicTickerStopCallback();
+#endif
 
 MmlMusicPWM::MmlMusicPWM(int pin)		// pin=255 for default constructor without setting _pinPwm
     : MmlMusic()
@@ -31,13 +37,16 @@ MmlMusicPWM::MmlMusicPWM(int pin)		// pin=255 for default constructor without se
     pinMode(_pinPwm, OUTPUT);
     this->noTone();
   }
+#if defined (ARDUINO_ARCH_RP2040)
+  __thisMmlMusicPWM = this;
+#endif
 }
 
 void MmlMusicPWM::playTone(unsigned int frequency, unsigned long length, uint8_t nTrack, uint8_t nVolume)		// nTrack=0, nVolume=0
 {
   if(frequency==0 && length==0)
 	{  	
-#if defined (ARDUINO_ARCH_ESP8266)
+#if defined (ARDUINO_ARCH_ESP8266) || defined (ARDUINO_ARCH_RP2040)
     //analogWriteFreq(1000); // Note: analogWriteFreq(0);  gives a spontaneous WDT reset
     //analogWrite(_pinPwm, 0);  // default range is 1024, start quiet using pulse-width zero
     ::noTone(_pinPwm);
@@ -63,6 +72,15 @@ void MmlMusicPWM::playTone(unsigned int frequency, unsigned long length, uint8_t
 
 		if(length>0)
 	    _scheduler.once(length/1000.0, &MmlMusicPWM::musicTickerStopCallback, this);	// MMOLE 190420: schedule when the tone should stop 
+#elif defined (ARDUINO_ARCH_RP2040)
+	  ::tone(_pinPwm, frequency);
+	  if(length>0) { // MMOLE 190420: schedule when the tone should stop 
+	      if (!_schedulerS)
+	        _scheduler1.once_ms(length, __musicTickerStopCallback);
+	      else
+	        _scheduler2.once_ms(length, __musicTickerStopCallback);
+	      _schedulerS = !_schedulerS;
+	  }
 #elif defined(__AVR_ATtiny85__)
     _toneTim1(_pinPwm, frequency, length);
 #else
@@ -73,6 +91,12 @@ void MmlMusicPWM::playTone(unsigned int frequency, unsigned long length, uint8_t
   {
 #if defined (ARDUINO_ARCH_ESP8266)
     _scheduler.once(length/1000.0, &MmlMusicPWM::musicTickerCallback, this);
+#elif defined (ARDUINO_ARCH_RP2040)
+	if (!_schedulerS)
+      _scheduler1.once_ms(length, __musicTickerCallback);
+    else
+      _scheduler2.once_ms(length, __musicTickerCallback);
+    _schedulerS = !_schedulerS;
 #elif defined(__AVR_ATtiny85__)
     _waitToneTim1(length);
 #else
@@ -88,6 +112,19 @@ void MmlMusicPWM::musicTickerCallback(MmlMusicPWM* __thisMmlMusicPWM)
 }
 void MmlMusicPWM::musicTickerStopCallback(MmlMusicPWM* __thisMmlMusicPWM)
 {
+    __thisMmlMusicPWM->noTone();
+}
+#elif defined (ARDUINO_ARCH_RP2040)
+static void __musicTickerCallback()
+{
+	if (!__thisMmlMusicPWM)
+	    return;
+    __thisMmlMusicPWM->continuePlaying();
+}
+static void __musicTickerStopCallback()
+{
+	if (!__thisMmlMusicPWM)
+	    return;
     __thisMmlMusicPWM->noTone();
 }
 #elif defined(__AVR_ATtiny85__)

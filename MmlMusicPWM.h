@@ -2,7 +2,7 @@
 #define __MMLMUSICPWM_H__
 #include "MmlMusic.h"
 //#include <Arduino.h>
-#if defined(ARDUINO_ARCH_ESP8266)
+#if defined(ARDUINO_ARCH_ESP8266) || defined (ARDUINO_ARCH_RP2040)
 #include <Ticker.h>
 #else
 // for ATmega we'll use redefinition of Timer2 (on 328/168) or Timer2 (on ATtiny) and portmanipulation
@@ -24,6 +24,9 @@ private:
     Ticker     _scheduler;
     static void musicTickerCallback(MmlMusicPWM*);
     static void musicTickerStopCallback(MmlMusicPWM*);
+#elif defined (ARDUINO_ARCH_RP2040)
+    Ticker _scheduler1, _scheduler2;
+    bool _schedulerS = false;
 #else
     //MsTimer2   _scheduler;
 #endif
